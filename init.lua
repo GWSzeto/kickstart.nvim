@@ -106,6 +106,7 @@ require('lazy').setup({
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
   'tpope/vim-fugitive',
   'numToStr/Comment.nvim',
+  'nvim-tree/nvim-web-devicons',
 
   {
     'rmagatti/goto-preview',
@@ -135,6 +136,29 @@ require('lazy').setup({
       require('lsp_signature').setup(opts)
     end,
   },
+
+  -- {
+  --   'yetone/avante.nvim',
+  --   event = 'VeryLazy',
+  --   build = 'make',
+  --   opts = {
+  --     -- add any opts here
+  --   },
+  --   dependencies = {
+  --     'nvim-tree/nvim-web-devicons', -- or echasnovski/mini.icons
+  --     'stevearc/dressing.nvim',
+  --     'nvim-lua/plenary.nvim',
+  --     'MunifTanjim/nui.nvim',
+  --     --- The below is optional, make sure to setup it properly if you have lazy=true
+  --     {
+  --       'MeanderingProgrammer/render-markdown.nvim',
+  --       opts = {
+  --         file_types = { 'markdown', 'Avante' },
+  --       },
+  --       ft = { 'markdown', 'Avante' },
+  --     },
+  --   },
+  -- },
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -476,8 +500,17 @@ require('lazy').setup({
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`tsserver`) will work just fine
-        -- tsserver = {},
-        --
+        tsserver = {
+          on_attach = function(client)
+            -- this is important, otherwise tsserver will format ts/js
+            -- files which we *really* don't want.
+            client.server_capabilities.documentFormattingProvider = false
+          end,
+        },
+
+        biome = {
+          format_on_save = true,
+        },
 
         lua_ls = {
           -- cmd = {...},
@@ -540,7 +573,34 @@ require('lazy').setup({
         desc = '[F]ormat buffer',
       },
     },
+
+    -- config = function()
+    --   local util = require 'conform.util'
+    --   require('conform').setup {
+    --     formatters = {
+    --       biome_lint = {
+    --         meta = {
+    --           url = 'https://github.com/biomejs/biome',
+    --           description = 'A toolchain for web projects, aimed to provide functionalities to maintain them.',
+    --         },
+    --         command = util.from_node_modules 'biome',
+    --         stdin = true,
+    --         args = { 'lint', '--write', '--unsafe', '--stdin-file-path', '$FILENAME' },
+    --         cwd = util.root_file {
+    --           'biome.json',
+    --           'biome.jsonc',
+    --         },
+    --       },
+    --     },
+    --   }
+    -- end,
+
     opts = {
+      formatters = {
+        ["biome-check"] = {
+          append_args = { "--unsafe" },
+        }
+      },
       notify_on_error = false,
       format_on_save = function(bufnr)
         -- Disable "format_on_save lsp_fallback" for languages that don't
@@ -554,12 +614,15 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
+        solidity = { 'forge_fmt' },
+        python = { 'isort', 'black' },
         -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
-        -- javascript = { { "prettierd", "prettier" } },
+        javascript = { 'biome-check' },
+        typescript = { 'biome-check' },
+        typescriptreact = { 'biome-check' },
       },
     },
   },
@@ -568,6 +631,7 @@ require('lazy').setup({
     'hrsh7th/nvim-cmp',
     event = 'InsertEnter',
     dependencies = {
+      { 'roobert/tailwindcss-colorizer-cmp.nvim', config = true },
       -- Snippet Engine & its associated nvim-cmp source
       {
         'L3MON4D3/LuaSnip',
@@ -600,7 +664,7 @@ require('lazy').setup({
       'hrsh7th/cmp-nvim-lsp',
       'hrsh7th/cmp-path',
     },
-    config = function()
+    config = function(_, opts)
       -- See `:help cmp`
       local cmp = require 'cmp'
       local luasnip = require 'luasnip'
@@ -808,7 +872,7 @@ require('lazy').setup({
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the

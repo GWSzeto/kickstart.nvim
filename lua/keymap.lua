@@ -118,3 +118,10 @@ vim.keymap.set({ 'n', 'v' }, '<leader>y', [["+y]])
 
 vim.keymap.set('n', '<leader>gp', "<cmd>lua require('goto-preview').goto_preview_definition()<CR>")
 vim.keymap.set('n', '<leader>gP', "<cmd>lua require('goto-preview').close_all_win()<CR>")
+
+-- [[ Avante.nvim ]]
+-- views can only be fully collapsed with the global statusline
+vim.opt.laststatus = 3
+-- Default splitting will cause your main splits to jump when opening an edgebar.
+-- To prevent this, set `splitkeep` to either `screen` or `topline`.
+vim.opt.splitkeep = 'screen'
