@@ -106,7 +106,6 @@ require('lazy').setup({
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
   'tpope/vim-fugitive',
   'numToStr/Comment.nvim',
-  'nvim-tree/nvim-web-devicons',
 
   {
     'rmagatti/goto-preview',
@@ -499,8 +498,8 @@ require('lazy').setup({
         -- Some languages (like typescript) have entire language plugins that can be useful:
         --    https://github.com/pmizio/typescript-tools.nvim
         --
-        -- But for many setups, the LSP (`tsserver`) will work just fine
-        tsserver = {
+        -- But for many setups, the LSP (`ts_ls`) will work just fine
+        ts_ls = {
           on_attach = function(client)
             -- this is important, otherwise tsserver will format ts/js
             -- files which we *really* don't want.
@@ -597,9 +596,9 @@ require('lazy').setup({
 
     opts = {
       formatters = {
-        ["biome-check"] = {
-          append_args = { "--unsafe" },
-        }
+        ['biome-check'] = {
+          append_args = { '--unsafe' },
+        },
       },
       notify_on_error = false,
       format_on_save = function(bufnr)
@@ -615,7 +614,7 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         solidity = { 'forge_fmt' },
-        python = { 'isort', 'black' },
+        python = { 'ruff_fix' },
         -- Conform can also run multiple formatters sequentially
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
@@ -866,6 +865,7 @@ require('lazy').setup({
   -- require 'kickstart.plugins.autopairs',
   -- require 'kickstart.plugins.neo-tree',
   require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
+  require 'kickstart.plugins.avante',
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
