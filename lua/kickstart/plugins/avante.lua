@@ -7,8 +7,8 @@ return {
     opts = {
       provider = 'claude',
       claude = {
-        model = 'claude-3-5-sonnet-latest',
-        max_tokens = 8192,
+        model = 'claude-sonnet-4-20250514',
+        max_tokens = 64000,
       },
     },
     -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
