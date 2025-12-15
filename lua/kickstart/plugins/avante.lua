@@ -6,9 +6,25 @@ return {
     version = false, -- set this if you want to always pull the latest change
     opts = {
       provider = 'claude',
-      claude = {
-        model = 'claude-sonnet-4-20250514',
-        max_tokens = 64000,
+      providers = {
+        openai = {
+          model = 'gpt-5.2-2025-12-11',
+          extra_request_body = {
+            max_tokens = 64000,
+          },
+        },
+        claude = {
+          model = 'claude-opus-4-5-20251101',
+          extra_request_body = {
+            max_tokens = 64000,
+          },
+        },
+        gemini = {
+          model = 'gemini-3-pro-preview',
+          extra_request_body = {
+            max_tokens = 65536,
+          },
+        },
       },
     },
     -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
