@@ -507,7 +507,9 @@ require('lazy').setup({
           end,
         },
 
-        harper_ls = {},
+        harper_ls = {
+          filetypes = { 'c', 'cpp', 'cs', 'gitcommit', 'go', 'html', 'java', 'javascript', 'lua', 'nix', 'python', 'ruby', 'rust', 'swift', 'toml', 'typescript', 'typescriptreact', 'haskell', 'cmake', 'typst', 'php', 'dart' },
+        },
 
         biome = {
           format_on_save = true,
