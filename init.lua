@@ -84,11 +84,11 @@ I hope you enjoy your Neovim journey,
 P.S. You can delete this when you're done too. It's your config now! :)
 --]]
 
--- keymappings
-require 'keymap'
-
 -- set (autocommands)
 require 'set'
+
+-- keymappings
+require 'keymap'
 
 -- [[ Configure and install plugins ]]
 --
@@ -165,24 +165,6 @@ require('lazy').setup({
   --
   -- Use `opts = {}` to force a plugin to be loaded.
   --
-
-  -- Here is a more advanced example where we pass configuration
-  -- options to `gitsigns.nvim`. This is equivalent to the following Lua:
-  --    require('gitsigns').setup({ ... })
-  --
-  -- See `:help gitsigns` to understand what the configuration keys do
-  { -- Adds git related signs to the gutter, as well as utilities for managing changes
-    'lewis6991/gitsigns.nvim',
-    opts = {
-      signs = {
-        add = { text = '+' },
-        change = { text = '~' },
-        delete = { text = '_' },
-        topdelete = { text = '‾' },
-        changedelete = { text = '~' },
-      },
-    },
-  },
 
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
@@ -290,7 +272,7 @@ require('lazy').setup({
 
       -- Enable Telescope extensions if they are installed
       pcall(require('telescope').load_extension, 'fzf')
-      pcall(require('telescope').load_extension, 'ui-select')
+      require('telescope').load_extension 'ui-select'
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
@@ -511,10 +493,6 @@ require('lazy').setup({
           filetypes = { 'c', 'cpp', 'cs', 'gitcommit', 'go', 'html', 'java', 'javascript', 'lua', 'nix', 'python', 'ruby', 'rust', 'swift', 'toml', 'typescript', 'typescriptreact', 'haskell', 'cmake', 'typst', 'php', 'dart' },
         },
 
-        biome = {
-          format_on_save = true,
-        },
-
         lua_ls = {
           -- cmd = {...},
           -- filetypes = { ...},
@@ -537,11 +515,9 @@ require('lazy').setup({
       --    :Mason
       --
       --  You can press `g?` for help in this menu.
-      require('mason').setup()
-
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.
-      local ensure_installed = vim.tbl_keys(servers or {})
+      local ensure_installed = vim.tbl_keys(servers)
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
         'harper-ls', -- Spell checker
@@ -578,55 +554,40 @@ require('lazy').setup({
       },
     },
 
-    -- config = function()
-    --   local util = require 'conform.util'
-    --   require('conform').setup {
-    --     formatters = {
-    --       biome_lint = {
-    --         meta = {
-    --           url = 'https://github.com/biomejs/biome',
-    --           description = 'A toolchain for web projects, aimed to provide functionalities to maintain them.',
-    --         },
-    --         command = util.from_node_modules 'biome',
-    --         stdin = true,
-    --         args = { 'lint', '--write', '--unsafe', '--stdin-file-path', '$FILENAME' },
-    --         cwd = util.root_file {
-    --           'biome.json',
-    --           'biome.jsonc',
-    --         },
-    --       },
-    --     },
-    --   }
-    -- end,
-
     opts = {
-      formatters = {
-        ['biome-check'] = {
-          append_args = { '--unsafe' },
-        },
-      },
       notify_on_error = false,
       format_on_save = function(bufnr)
-        -- Disable "format_on_save lsp_fallback" for languages that don't
-        -- have a well standardized coding style. You can add additional
-        -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
+        -- For filetypes with project-managed formatters, avoid LSP fallback so
+        -- save formatting stays consistent with the repo's formatter config.
+        local disable_lsp_fallback = {
+          c = true,
+          cpp = true,
+          javascript = true,
+          javascriptreact = true,
+          typescript = true,
+          typescriptreact = true,
+          json = true,
+          jsonc = true,
+          css = true,
+          markdown = true,
+        }
         return {
           timeout_ms = 500,
-          lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
+          lsp_fallback = not disable_lsp_fallback[vim.bo[bufnr].filetype],
         }
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
         solidity = { 'forge_fmt' },
         python = { 'ruff_fix' },
-        -- Conform can also run multiple formatters sequentially
-        --
-        -- You can use a sub-list to tell conform to run *until* a formatter
-        -- is found.
-        javascript = { 'biome-check' },
-        typescript = { 'biome-check' },
-        typescriptreact = { 'biome-check' },
+        javascript = { 'prettier' },
+        javascriptreact = { 'prettier' },
+        typescript = { 'prettier' },
+        typescriptreact = { 'prettier' },
+        json = { 'prettier' },
+        jsonc = { 'prettier' },
+        css = { 'prettier' },
+        markdown = { 'prettier' },
       },
     },
   },
@@ -811,40 +772,30 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     opts = {
-      ensure_installed = {
-        'javascript',
-        'typescript',
-        'solidity',
-        'bash',
-        'c',
-        'diff',
-        'html',
-        'lua',
-        'luadoc',
-        'markdown',
-        'markdown_inline',
-        'query',
-        'vim',
-        'vimdoc',
-      },
-      -- Autoinstall languages that are not installed
-      auto_install = true,
-      highlight = {
-        enable = true,
-        -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
-        --  If you are experiencing weird indenting issues, add the language to
-        --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-        additional_vim_regex_highlighting = false,
-      },
       indent = { enable = true, disable = { 'ruby' } },
     },
     config = function(_, opts)
       -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
-
       -- Prefer git instead of curl in order to improve connectivity in some environments
       require('nvim-treesitter.install').prefer_git = true
-      ---@diagnostic disable-next-line: missing-fields
-      require('nvim-treesitter.configs').setup(opts)
+
+      local indent_disabled = opts.indent and opts.indent.disable or {}
+      local treesitter_augroup = vim.api.nvim_create_augroup('kickstart-treesitter', { clear = true })
+      vim.api.nvim_create_autocmd('FileType', {
+        group = treesitter_augroup,
+        callback = function(args)
+          -- Treesitter highlighting is provided by Neovim itself; start it per-buffer.
+          pcall(vim.treesitter.start, args.buf)
+
+          local lang = vim.treesitter.language.get_lang(vim.bo[args.buf].filetype) or vim.bo[args.buf].filetype
+          if vim.tbl_contains(indent_disabled, lang) then
+            return
+          end
+
+          -- Treesitter indentation is still opt-in and can be disabled per language.
+          vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+        end,
+      })
 
       -- There are additional nvim-treesitter modules that you can use to interact
       -- with nvim-treesitter. You should go explore a few and see what interests you:
@@ -869,7 +820,7 @@ require('lazy').setup({
   require 'kickstart.plugins.lint',
   -- require 'kickstart.plugins.autopairs',
   -- require 'kickstart.plugins.neo-tree',
-  require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
+  require 'kickstart.plugins.gitsigns',
   require 'kickstart.plugins.avante',
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`

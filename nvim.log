@@ -1,0 +1,4 @@
+WRN 2026-04-09T13:28:30.523 ?.88955    server_start:197: Failed to start server: operation not permitted: /var/folders/3t/b4yhlyhd32l4m8k291y34vf80000gp/T/nvim.sapienai/fIe102/nvim.88955.0
+WRN 2026-04-10T12:25:53.173 ?.92352    server_start:197: Failed to start server: operation not permitted: /var/folders/3t/b4yhlyhd32l4m8k291y34vf80000gp/T/nvim.sapienai/bti4R6/nvim.92352.0
+WRN 2026-04-10T12:25:53.244 ?.92353    server_start:197: Failed to start server: operation not permitted: /var/folders/3t/b4yhlyhd32l4m8k291y34vf80000gp/T/nvim.sapienai/pYPIwO/nvim.92353.0
+WRN 2026-04-10T12:25:53.244 ?.92354    server_start:197: Failed to start server: operation not permitted: /var/folders/3t/b4yhlyhd32l4m8k291y34vf80000gp/T/nvim.sapienai/UeRYtM/nvim.92354.0
