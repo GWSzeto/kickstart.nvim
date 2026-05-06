@@ -90,6 +90,17 @@ require 'set'
 -- keymappings
 require 'keymap'
 
+-- Telescope 0.1.x still expects this nvim-treesitter helper on preview highlight.
+-- Neovim 0.12 removed it in favor of `vim.treesitter.language.get_lang`.
+do
+  local ok, parsers = pcall(require, 'nvim-treesitter.parsers')
+  if ok and parsers.ft_to_lang == nil and vim.treesitter.language.get_lang ~= nil then
+    parsers.ft_to_lang = function(ft)
+      return vim.treesitter.language.get_lang(ft) or ft
+    end
+  end
+end
+
 -- [[ Configure and install plugins ]]
 --
 --  To check the current status of your plugins, run
@@ -210,7 +221,7 @@ require('lazy').setup({
   { -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
     event = 'VimEnter',
-    branch = '0.1.x',
+    version = '*',
     dependencies = {
       'nvim-lua/plenary.nvim',
       { -- If encountering errors, see telescope-fzf-native README for installation instructions
